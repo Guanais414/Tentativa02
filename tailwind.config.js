@@ -1,0 +1,37 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
+  theme: {
+    extend: {},
+  },
+  safelist: [
+    // Dynamic color classes used across components
+    'bg-indigo-50', 'bg-indigo-950/30', 'bg-indigo-100', 'bg-indigo-500', 'bg-indigo-400',
+    'bg-blue-50', 'bg-blue-950/30', 'bg-blue-100', 'bg-blue-500', 'bg-blue-400',
+    'bg-cyan-50', 'bg-cyan-950/30', 'bg-cyan-100', 'bg-cyan-500', 'bg-cyan-400',
+    'bg-green-50', 'bg-green-950/30', 'bg-green-100', 'bg-green-500', 'bg-green-400',
+    'bg-rose-50', 'bg-rose-950/30', 'bg-rose-100', 'bg-rose-500', 'bg-rose-400',
+    'bg-amber-50', 'bg-amber-950/30', 'bg-amber-100', 'bg-amber-500', 'bg-amber-400',
+    'bg-orange-50', 'bg-orange-950/30', 'bg-orange-100', 'bg-orange-500', 'bg-orange-400',
+    'bg-purple-50', 'bg-purple-950/30', 'bg-purple-100', 'bg-purple-500', 'bg-purple-400',
+    'bg-yellow-50', 'bg-yellow-950/30', 'bg-yellow-100', 'bg-yellow-500', 'bg-yellow-400',
+    'bg-pink-50', 'bg-pink-950/30', 'bg-pink-100', 'bg-pink-500', 'bg-pink-400',
+    'bg-fuchsia-50', 'bg-fuchsia-950/30', 'bg-fuchsia-100', 'bg-fuchsia-500',
+    'text-indigo-500', 'text-indigo-600', 'text-indigo-400',
+    'text-cyan-500', 'text-cyan-600', 'text-cyan-400',
+    'text-green-500', 'text-green-600', 'text-green-400',
+    'text-rose-500', 'text-rose-600', 'text-rose-400',
+    'text-amber-500', 'text-amber-600', 'text-amber-400',
+    'text-orange-500', 'text-orange-600', 'text-orange-400',
+    'text-purple-500', 'text-purple-600', 'text-purple-400',
+    'text-yellow-500', 'text-yellow-600', 'text-yellow-400',
+    'text-pink-500', 'text-pink-600', 'text-pink-400',
+    'ring-indigo-400', 'ring-cyan-400', 'ring-green-400', 'ring-rose-400',
+    'ring-amber-400', 'ring-orange-400', 'ring-purple-400',
+    'ring-green-200', 'ring-amber-200', 'ring-rose-200', 'ring-orange-200',
+    'ring-green-800', 'ring-amber-800', 'ring-rose-800', 'ring-orange-800',
+    'border-3',
+  ],
+  plugins: [],
+};
