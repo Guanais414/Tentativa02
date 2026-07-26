@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import type { UserProfile, GameState, MascotType } from '../types';
 import { Mascot } from './Mascot';
-import { Send, Leaf, Heart, X, ChevronLeft, Sparkles, AlertTriangle, Lock, Mail, RefreshCw, Info, Shield, ScrollText, CheckCircle2 } from 'lucide-react';
+import { Send, Leaf, Heart, X, ChevronLeft, Sparkles, AlertTriangle, Mail, RefreshCw, Info, Shield, ScrollText, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   profile: UserProfile;
@@ -41,11 +41,9 @@ const INSPIRATIONAL_LETTERS = [
 const DRAFT_KEY = 'bamboo_draft';
 
 export function BambooForest({ profile, game, userId, onGainXp }: Props) {
-  const [ageVerified, setAgeVerified] = useState(() => {
-    try { return localStorage.getItem('bamboo_age_verified') === 'true'; } catch { return false; }
+  const [termsAccepted, setTermsAccepted] = useState(() => {
+    try { return localStorage.getItem('bamboo_terms_accepted') === 'true'; } catch { return false; }
   });
-  const [ageInput, setAgeInput] = useState('');
-  const [ageError, setAgeError] = useState<string | null>(null);
   const [view, setView] = useState<'home' | 'write' | 'pick' | 'read' | 'replied' | 'letter'>('home');
   const [letterText, setLetterText] = useState('');
   const [moodTag, setMoodTag] = useState('other');
@@ -59,34 +57,16 @@ export function BambooForest({ profile, game, userId, onGainXp }: Props) {
   const [inspirational, setInspirational] = useState<string>(INSPIRATIONAL_LETTERS[0]);
   const [letterOpen, setLetterOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(true);
   const [termsScrolled, setTermsScrolled] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
 
-  const verifyAge = () => {
-    const age = parseInt(ageInput, 10);
-    if (isNaN(age) || age < 1 || age > 120) {
-      setAgeError('Please enter a valid age.');
-      return;
-    }
-    if (age < 16) {
-      setAgeError('Bamboo Forest is available only for users aged 16 and older. This space is designed for mature, supportive conversations.');
-      return;
-    }
-    setShowTerms(true);
-    setTermsScrolled(false);
-    setTermsAgreed(false);
-    setAgeError(null);
-  };
-
   const acceptTermsAndEnter = () => {
-    setAgeVerified(true);
+    setTermsAccepted(true);
     try {
-      localStorage.setItem('bamboo_age_verified', 'true');
       localStorage.setItem('bamboo_terms_accepted', 'true');
     } catch { /* ignore */ }
     setShowTerms(false);
-    setAgeError(null);
     pickRandomLetter();
   };
 
@@ -205,53 +185,6 @@ export function BambooForest({ profile, game, userId, onGainXp }: Props) {
     if (view === 'pick') fetchLetters();
     if (view === 'home' && myLetterId) checkMyReply();
   }, [view, myLetterId, fetchLetters]);
-
-  // Age gate screen
-  if (!ageVerified) {
-    return (
-      <div className="px-4 pt-6 pb-4 max-w-md mx-auto min-h-screen flex flex-col">
-        <div className="flex items-center gap-2 mb-2">
-          <Leaf size={24} className="text-green-600" />
-          <h1 className="text-2xl font-extrabold text-green-800 dark:text-green-300">Bamboo Forest</h1>
-        </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          A quiet space to share your thoughts and support others. Before entering, please confirm your age.
-        </p>
-
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <Lock size={20} className="text-amber-500" />
-            <p className="font-bold">Age Verification</p>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Bamboo Forest is a community space designed for users aged 16 and older. Please enter your age to continue.
-          </p>
-          <input
-            type="number"
-            value={ageInput}
-            onChange={(e) => setAgeInput(e.target.value)}
-            placeholder="Your age"
-            className="w-full bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3 mb-3 outline-none focus:ring-2 ring-green-400 text-center text-lg font-bold"
-            min={1}
-            max={120}
-          />
-          {ageError && (
-            <div className="bg-rose-50 dark:bg-rose-950/20 rounded-2xl p-3 mb-3 flex items-start gap-2">
-              <AlertTriangle size={16} className="text-rose-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-rose-600 dark:text-rose-400">{ageError}</p>
-            </div>
-          )}
-          <button
-            onClick={verifyAge}
-            disabled={!ageInput}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3.5 rounded-2xl shadow-lg active:scale-95 transition-transform disabled:opacity-40"
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="px-4 pt-6 pb-4 max-w-md mx-auto min-h-screen">
@@ -491,8 +424,8 @@ export function BambooForest({ profile, game, userId, onGainXp }: Props) {
         </div>
       )}
 
-      {/* Terms of use modal (first age verification) */}
-      {showTerms && (
+      {/* Terms of use modal (first visit) */}
+      {!termsAccepted && showTerms && (
         <div className="fixed inset-0 bg-black/70 z-[85] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-md w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
             <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
@@ -511,7 +444,7 @@ export function BambooForest({ profile, game, userId, onGainXp }: Props) {
               <p className="flex items-center gap-1.5 font-bold text-gray-800 dark:text-gray-100"><ScrollText size={15} /> Bamboo Forest Community Guidelines</p>
               <p>Before you enter Bamboo Forest, please read and agree to these terms. This space works best when everyone treats it with care.</p>
               <div className="space-y-2.5">
-                <p><span className="font-semibold text-gray-800 dark:text-gray-100">1. Age requirement.</span> Bamboo Forest is for users aged 16 and older. By continuing, you confirm you meet this requirement.</p>
+                <p><span className="font-semibold text-gray-800 dark:text-gray-100">1. Age recommendation.</span> Bamboo Forest is recommended for users aged 16 and older, as it involves mature, supportive conversations. Younger users are welcome but should use this space with care.</p>
                 <p><span className="font-semibold text-gray-800 dark:text-gray-100">2. Anonymity.</span> Letters are anonymous. No names or profiles are attached to a letter. Do not include personal information (full name, address, phone, email) in your letters.</p>
                 <p><span className="font-semibold text-gray-800 dark:text-gray-100">3. Kindness first.</span> Write and reply with empathy. Harassment, threats, hate speech, bullying, or shaming are not allowed and may result in losing access to this space.</p>
                 <p><span className="font-semibold text-gray-800 dark:text-gray-100">4. No harmful content.</span> Do not post content that encourages self-harm, violence, or illegal activity. If you or someone else is in crisis, please contact local emergency services or a crisis helpline — this space is not a substitute for professional help.</p>
